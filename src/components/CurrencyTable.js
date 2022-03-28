@@ -5,6 +5,7 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { getPercentDiff } from '../utils';
 import CurrencyAPI from '../api/CurrencyAPI';
 import useStyles from "./CurrencyTable.style";
+import 'datejs';
 
 function Row(props) {
   const classes = useStyles();
@@ -55,7 +56,7 @@ function Row(props) {
                 <TableBody>
                   {history.map((historyRow, index) => (
                     <TableRow key={index}>
-                      <TableCell className={classes.historyCell} align="center">{historyRow.Date}</TableCell>
+                      <TableCell className={classes.historyCell} align="center">{historyRow.Date.toString("d/M/yyyy")}</TableCell>
                       <TableCell className={classes.historyCell} align="center">{historyRow.Value}</TableCell>
                       <TableCell className={classes.historyCell} align="right">{
                         getPercentDiff(historyRow.Value, historyRow.Previous).toFixed(2)
