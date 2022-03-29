@@ -40,11 +40,11 @@ function Row(props) {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <Tooltip title={row.currencyName} placement="left" arrow>
-          <TableCell sx={{color: "rgba(255,255,255, 0.5)"}} scope="row">
-            {row.currencyCode}
-          </TableCell>
+        <TableCell sx={{color: "rgba(255,255,255, 0.5)"}} scope="row">
+        <Tooltip title={row.currencyName} placement="bottom-start" arrow>
+            <div>{row.currencyCode}</div>
         </Tooltip>
+        </TableCell>
         <TableCell sx={{color: "rgba(255,255,255, 0.5)"}} align="right">{row.rate}</TableCell>
         <TableCell sx={{color: "rgba(255,255,255, 0.5)"}} align="right">{row.diff}</TableCell>
       </TableRow>
