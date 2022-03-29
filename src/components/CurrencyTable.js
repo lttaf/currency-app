@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Box, Collapse, IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tooltip } from '@mui/material';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { getPercentDiff } from '../utils';
+import { createData } from '../utils';
 import CurrencyAPI from '../api/CurrencyAPI';
 import useStyles from "./CurrencyTable.style";
 import 'datejs';
@@ -22,7 +22,7 @@ function Row(props) {
     CurrencyAPI.fetchPreviousUrl()
       .then((previousURL) => CurrencyAPI.fetchPreviousData(name, previousURL, [], 10))
       .then((data) => {
-        setHistory(data)
+        setHistory(createData(data))
         setOpen(true)
       })
   }
@@ -45,8 +45,10 @@ function Row(props) {
             <div>{row.currencyCode}</div>
         </Tooltip>
         </TableCell>
-        <TableCell sx={{color: "rgba(255,255,255, 0.5)"}} align="right">{row.rate}</TableCell>
-        <TableCell sx={{color: "rgba(255,255,255, 0.5)"}} align="right">{row.diff}</TableCell>
+        <TableCell sx={{color: "rgba(255,255,255, 0.5)"}} align="right">{row.value}</TableCell>
+        <TableCell sx={{color: row.diff >= 0 ? "rgba(99, 173, 131, 1)" : "rgba(173, 99, 121, 1)"}} align="right">{
+          row.diff
+        }</TableCell>
       </TableRow>
       <TableRow sx={{backgroundColor: "rgba(56,61,69, 0.8)"}}>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -56,10 +58,11 @@ function Row(props) {
                 <TableBody>
                   {history.map((historyRow, index) => (
                     <TableRow key={index}>
-                      <TableCell className={classes.historyCell} align="center">{historyRow.Date.toString("d/M/yyyy")}</TableCell>
-                      <TableCell className={classes.historyCell} align="center">{historyRow.Value}</TableCell>
-                      <TableCell className={classes.historyCell} align="right">{
-                        getPercentDiff(historyRow.Value, historyRow.Previous).toFixed(2)
+                      <TableCell className={classes.historyCell} align="center">{historyRow.date.toString("d/M/yyyy")}</TableCell>
+                      <TableCell className={classes.historyCell} align="center">{historyRow.value}</TableCell>
+                      <TableCell className={classes.historyDiffCell} 
+                        sx={{color: historyRow.diff >= 0 ? "rgba(99, 173, 131, 1)" : "rgba(173, 99, 121, 1)"}} align="right">{
+                          historyRow.diff
                       }</TableCell>
                     </TableRow>
                   ))}
@@ -77,15 +80,7 @@ export default function CurrencyTable() {
 
   const [currencies, setCurrencies] = React.useState([])
 
-  const rows = Object.values(currencies).map(item => {
-    const diff = getPercentDiff(item.Value, item.Previous)
-    return {
-      currencyCode: item.CharCode,
-      currencyName: item.Name,
-      rate: item.Value,
-      diff: diff.toFixed(2)
-    };
-  })
+  const rows = createData(Object.values(currencies))
 
   React.useEffect(() => {
     CurrencyAPI.fetchCurrencyData().then((data) => {
